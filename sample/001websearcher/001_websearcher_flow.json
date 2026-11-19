@@ -1,0 +1,701 @@
+{
+  "version": "1.0.0",
+  "rootLevelId": "root",
+  "currentLevelId": "root/research_orchestrator",
+  "breadcrumbs": [
+    {
+      "id": "root",
+      "title": "001 WebSearcher (業務AI事例収集)"
+    },
+    {
+      "id": "root/research_orchestrator",
+      "title": "RESEARCH_ORCHESTRATOR (自律調査コンテナ) (Subflow)"
+    }
+  ],
+  "levels": {
+    "root": {
+      "nodes": [
+        {
+          "id": "user_directive",
+          "type": "boundaryPort",
+          "position": {
+            "x": -609.3779985733017,
+            "y": 27.131520752262702
+          },
+          "data": {
+            "actorId": "boundary_in",
+            "actorType": "BOUNDARY",
+            "boundaryType": "in",
+            "customName": "ユーザー指示 (IN)",
+            "label": "ユーザー指示 (IN)",
+            "sublabel": "Boundary Input (Context)",
+            "boundSocketId": "prompt",
+            "socketId": "prompt",
+            "boundSocketType": "Context",
+            "protocolType": "Context",
+            "icon": "Plug",
+            "colorHex": "#00E5FF",
+            "inputs": [],
+            "outputs": [
+              {
+                "id": "prompt",
+                "label": "初期プロンプト",
+                "type": "Context"
+              }
+            ],
+            "config": {
+              "testInputEnabled": true,
+              "prompt": "業務におけるAI活用・連携による生産性向上ユースケースを大量に収集せよ。\n- 対象：製造、金融、小売、医療、法律、マーケティング、ソフトウェア開発、人事、カスタマーサポートなど主要業界\n- 特に「複数ツール/エージェント連携」「オーケストレーション」「Evaluator-Optimizerループ」を使った事例を優先\n- 各ユースケースに英語の自然な表現・フレーズも含める\n- 出力は指定のJSONスキーマに厳密に従う\n- 各ジャンル５件以上を目標にする。ふさわしくないデータはバッサリと切り捨て、残りが半数以下となった場合は、そのジャンルのみに再要求をかける（同じ５件を要求）。残った件数と再要求で選別されたものを足して５件以上で完了。再要求は３回までとする",
+              "samplePrompts": [
+                "業務AI活用事例の収集（標準）:\n業務におけるAI活用・連携による生産性向上ユースケースを大量に収集せよ。\n- 対象：製造、金融、小売、医療、法律、マーケティング、ソフトウェア開発、人事、カスタマーサポートなど主要業界\n- 特に「複数ツール/エージェント連携」「オーケストレーション」「Evaluator-Optimizerループ」を使った事例を優先\n- 各ユースケースに英語の自然な表現・フレーズも含める\n- 出力は指定のJSONスキーマに厳密に従う\n- 各ジャンル５件以上を目標にする。ふさわしくないデータはバッサリと切り捨て、残りが半数以下となった場合は、そのジャンルのみに再要求をかける（同じ５件を要求）。残った件数と再要求で選別されたものを足して５件以上で完了。再要求は３回までとする",
+                "製造業における予知保全・外観検査AIの導入事例とROI調査:\n製造業（自動車・半導体・重工業）における予知保全およびAI外観検査の導入事例を調査せよ。\n- エッジAIとクラウド連携アーキテクチャ\n- 導入前後の不良率削減効果・投資対効果(ROI)\n- 現場作業者とAIの協調運用フロー",
+                "金融・保険業界におけるRAG・マルチエージェント活用の最新動向:\n金融・保険業界におけるRAGおよびマルチエージェント協調の導入事例を収集せよ。\n- 社内規定・約款検索におけるハルシネーション抑止策\n- 融資審査・引受審査におけるマルチエージェント意思決定ワークフロー\n- 金融コンプライアンス・ガバナンス対応（監査ログ・説明性）"
+              ]
+            }
+          }
+        },
+        {
+          "id": "research_orchestrator",
+          "type": "customActor",
+          "position": {
+            "x": -283.5893542104149,
+            "y": 130.0334873354355
+          },
+          "data": {
+            "actorId": "palette",
+            "customName": "RESEARCH_ORCHESTRATOR (自律調査コンテナ)",
+            "actorType": "PALETTE (CONTAINER)",
+            "label": "RESEARCH_ORCHESTRATOR",
+            "sublabel": "Fractal Agent Pipeline",
+            "icon": "Boxes",
+            "colorHex": "#7C4DFF",
+            "inputs": [
+              {
+                "id": "prompt",
+                "label": "prompt",
+                "type": "Context"
+              },
+              {
+                "id": "context",
+                "label": "context",
+                "type": "Context"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "final_dataset",
+                "label": "final_dataset",
+                "type": "Result"
+              },
+              {
+                "id": "out_4",
+                "label": "OUT 4",
+                "type": "Result"
+              }
+            ],
+            "config": {
+              "targetQuota": 50,
+              "strictEvaluation": true
+            }
+          }
+        },
+        {
+          "id": "dataset_memory",
+          "type": "customActor",
+          "position": {
+            "x": 52.94671624461975,
+            "y": 23.934988263469037
+          },
+          "data": {
+            "actorId": "leaf_kvs_store",
+            "customName": "ユースケース蓄積メモリ (KVS)",
+            "actorType": "LEAF / STORAGE",
+            "label": "Dataset Storage",
+            "sublabel": "PERSISTENT KVS MEMORY",
+            "icon": "Database",
+            "colorHex": "#00E5FF",
+            "inputs": [
+              {
+                "id": "write_data",
+                "label": "write",
+                "type": "Result"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "value",
+                "label": "dataset",
+                "type": "Result"
+              }
+            ],
+            "config": {
+              "namespace": "ai_use_cases",
+              "key": "production_dataset_v1"
+            }
+          }
+        },
+        {
+          "id": "websearcher_out",
+          "type": "boundaryPort",
+          "position": {
+            "x": 420,
+            "y": 24
+          },
+          "data": {
+            "actorId": "boundary_out",
+            "actorType": "BOUNDARY",
+            "boundaryType": "out",
+            "label": "最終調査レポート (OUT)",
+            "customName": "最終調査レポート (OUT)",
+            "sublabel": "Boundary Output (Result)",
+            "boundSocketId": "result",
+            "socketId": "result",
+            "boundSocketType": "Result",
+            "protocolType": "Result",
+            "icon": "LogOut",
+            "colorHex": "#00FF66",
+            "inputs": [
+              {
+                "id": "result",
+                "label": "最終出力",
+                "type": "Result"
+              }
+            ],
+            "outputs": [],
+            "config": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e_root_1",
+          "source": "user_directive",
+          "sourceHandle": "prompt",
+          "target": "research_orchestrator",
+          "targetHandle": "prompt",
+          "type": "glow",
+          "data": {
+            "socketType": "Context"
+          }
+        },
+        {
+          "id": "e_root_2",
+          "source": "research_orchestrator",
+          "sourceHandle": "final_dataset",
+          "target": "dataset_memory",
+          "targetHandle": "write_data",
+          "type": "glow",
+          "data": {
+            "socketType": "Result"
+          }
+        },
+        {
+          "id": "e_root_3",
+          "source": "dataset_memory",
+          "sourceHandle": "value",
+          "target": "websearcher_out",
+          "targetHandle": "result",
+          "type": "glow",
+          "data": {
+            "socketType": "Result"
+          }
+        }
+      ]
+    },
+    "root/research_orchestrator": {
+      "nodes": [
+        {
+          "id": "b_in_prompt",
+          "type": "boundaryPort",
+          "position": {
+            "x": -440,
+            "y": 15
+          },
+          "data": {
+            "actorId": "boundary_in",
+            "actorType": "BOUNDARY",
+            "boundaryType": "in",
+            "boundSocketId": "prompt",
+            "boundSocketType": "Context",
+            "label": "prompt",
+            "sublabel": "Outer: prompt",
+            "icon": "Plug",
+            "colorHex": "#00E5FF",
+            "inputs": [],
+            "outputs": [
+              {
+                "id": "prompt",
+                "label": "prompt",
+                "type": "Context"
+              }
+            ],
+            "config": {}
+          }
+        },
+        {
+          "id": "b_in_context",
+          "type": "boundaryPort",
+          "position": {
+            "x": -440,
+            "y": 200
+          },
+          "data": {
+            "actorId": "boundary_in",
+            "actorType": "BOUNDARY",
+            "boundaryType": "in",
+            "boundSocketId": "context",
+            "boundSocketType": "Context",
+            "label": "context",
+            "sublabel": "Outer: context",
+            "icon": "Plug",
+            "colorHex": "#00E5FF",
+            "inputs": [],
+            "outputs": [
+              {
+                "id": "context",
+                "label": "context",
+                "type": "Context"
+              }
+            ],
+            "config": {}
+          }
+        },
+        {
+          "id": "sub_planner",
+          "type": "customActor",
+          "position": {
+            "x": -140,
+            "y": 40
+          },
+          "data": {
+            "actorId": "leaf_planner",
+            "customName": "戦略探索マトリクス Planner",
+            "actorType": "LEAF / CORE ENGINE",
+            "label": "Standard Planner",
+            "sublabel": "EXPLORATION PLANNER",
+            "icon": "Brain",
+            "colorHex": "#2979FF",
+            "inputs": [
+              {
+                "id": "prompt",
+                "label": "prompt",
+                "type": "Context"
+              },
+              {
+                "id": "context",
+                "label": "context",
+                "type": "Context"
+              },
+              {
+                "id": "feedback",
+                "label": "feedback",
+                "type": "Feedback"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "plan",
+                "label": "plan",
+                "type": "Plan"
+              },
+              {
+                "id": "rules",
+                "label": "rules",
+                "type": "Control"
+              }
+            ],
+            "config": {
+              "strategyMode": "hierarchical",
+              "maxTasks": 5
+            }
+          }
+        },
+        {
+          "id": "sub_router",
+          "type": "customActor",
+          "position": {
+            "x": 180,
+            "y": -10
+          },
+          "data": {
+            "actorId": "leaf_router",
+            "customName": "神経系ルーター (Robust Router)",
+            "actorType": "LEAF / CORE ENGINE",
+            "label": "Robust Router",
+            "sublabel": "NEURAL DISPATCHER",
+            "icon": "Network",
+            "colorHex": "#00E5FF",
+            "inputs": [
+              {
+                "id": "plan",
+                "label": "plan",
+                "type": "Plan"
+              },
+              {
+                "id": "feedback",
+                "label": "feedback",
+                "type": "Feedback"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "task_research",
+                "label": "task",
+                "type": "Task"
+              },
+              {
+                "id": "replan_req",
+                "label": "re-plan",
+                "type": "Feedback"
+              },
+              {
+                "id": "final_result",
+                "label": "final result",
+                "type": "Result"
+              }
+            ],
+            "config": {
+              "strategy": "dependency_first"
+            }
+          }
+        },
+        {
+          "id": "sub_worker_a1",
+          "type": "customActor",
+          "position": {
+            "x": 500,
+            "y": -10
+          },
+          "data": {
+            "actorId": "leaf_worker",
+            "customName": "A1: Web調査エージェント",
+            "actorType": "LEAF / CORE ENGINE",
+            "label": "A1: Web調査エージェント",
+            "sublabel": "WEB RETRIEVAL WORKER",
+            "icon": "Bot",
+            "colorHex": "#FF9100",
+            "inputs": [
+              {
+                "id": "task",
+                "label": "task",
+                "type": "Task"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "result",
+                "label": "result",
+                "type": "Result"
+              }
+            ],
+            "config": {
+              "systemPrompt": "あなたは検索クエリプランナーです。与えられた調査指示を分析し、検索エンジン（WebSearcher）で最も良質な事例がヒットするような、具体的で的を射た検索キーワード（日本語・英語）を策定して出力してください。"
+            },
+            "craftLevel": 3
+          }
+        },
+        {
+          "id": "sub_tool_search",
+          "type": "customActor",
+          "position": {
+            "x": 820,
+            "y": 15
+          },
+          "data": {
+            "actorId": "leaf_web_searcher",
+            "customName": "Web Searcher (外部検索)",
+            "actorType": "LEAF / ENVIRONMENT",
+            "label": "Web Searcher (外部検索)",
+            "sublabel": "ONLINE SEARCH TOOL",
+            "icon": "Globe",
+            "colorHex": "#2979FF",
+            "inputs": [
+              {
+                "id": "query",
+                "label": "query",
+                "type": "Context"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "results",
+                "label": "results",
+                "type": "Result"
+              }
+            ],
+            "config": {
+              "provider": "duckduckgo",
+              "maxResults": 5
+            }
+          }
+        },
+        {
+          "id": "sub_worker_a2",
+          "type": "customActor",
+          "position": {
+            "x": 1140,
+            "y": 0
+          },
+          "data": {
+            "actorId": "leaf_worker",
+            "customName": "A2: 業界特化アナリスト",
+            "actorType": "LEAF / CORE ENGINE",
+            "label": "Domain Agent",
+            "sublabel": "INDUSTRY PROCESS ANALYST",
+            "icon": "Briefcase",
+            "colorHex": "#FF9100",
+            "inputs": [
+              {
+                "id": "task",
+                "label": "task",
+                "type": "Task"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "result",
+                "label": "result",
+                "type": "Result"
+              }
+            ],
+            "config": {
+              "systemPrompt": "あなたは、製造・金融・医療・小売などの業界特化業務プロセスとAI連携パターンを分析するアナリストです。webからの生データを正しく分析・整理・整形して出力します。"
+            }
+          }
+        },
+        {
+          "id": "sub_evaluator",
+          "type": "customActor",
+          "position": {
+            "x": 1460,
+            "y": 40
+          },
+          "data": {
+            "actorId": "leaf_evaluator",
+            "customName": "厳格品質判定 (Strict Evaluator)",
+            "actorType": "LEAF / GOVERNANCE",
+            "label": "Strict Evaluator",
+            "sublabel": "QUALITY JUDGE",
+            "icon": "ShieldCheck",
+            "colorHex": "#D500F9",
+            "inputs": [
+              {
+                "id": "result",
+                "label": "result",
+                "type": "Result"
+              },
+              {
+                "id": "criteria",
+                "label": "criteria",
+                "type": "Context"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "approved",
+                "label": "approved",
+                "type": "Result"
+              },
+              {
+                "id": "feedback",
+                "label": "feedback",
+                "type": "Feedback"
+              }
+            ],
+            "config": {
+              "threshold": 0.75,
+              "strictMode": true
+            }
+          }
+        },
+        {
+          "id": "sub_schema_guard",
+          "type": "customActor",
+          "position": {
+            "x": 1780,
+            "y": 75
+          },
+          "data": {
+            "actorId": "leaf_schema_guard",
+            "customName": "JSON Schema Guard (自己修復)",
+            "actorType": "LEAF / GOVERNANCE",
+            "label": "Schema Guard",
+            "sublabel": "SCHEMA VALIDATOR & HEALER",
+            "icon": "CheckCircle2",
+            "colorHex": "#00E676",
+            "inputs": [
+              {
+                "id": "data",
+                "label": "data",
+                "type": "Result"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "valid",
+                "label": "valid",
+                "type": "Result"
+              },
+              {
+                "id": "invalid",
+                "label": "invalid",
+                "type": "Control"
+              }
+            ],
+            "config": {
+              "mode": "auto_heal",
+              "schema": {
+                "use_case_id": "string",
+                "industry": "string",
+                "business_process": "string",
+                "ai_pattern": "string",
+                "description_ja": "string",
+                "description_en": "string",
+                "tools_integrated": "array",
+                "productivity_metric": "string",
+                "english_phrases": "array",
+                "source_urls": "array",
+                "confidence": "number"
+              }
+            }
+          }
+        },
+        {
+          "id": "b_out_final",
+          "type": "boundaryPort",
+          "position": {
+            "x": 2100,
+            "y": 100
+          },
+          "data": {
+            "actorId": "boundary_out",
+            "actorType": "BOUNDARY",
+            "boundaryType": "out",
+            "boundSocketId": "final_dataset",
+            "boundSocketType": "Result",
+            "label": "final_dataset",
+            "sublabel": "Outer: final_dataset",
+            "icon": "Plug",
+            "colorHex": "#00E676",
+            "inputs": [
+              {
+                "id": "final_dataset",
+                "label": "final_dataset",
+                "type": "Result"
+              }
+            ],
+            "outputs": [],
+            "config": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "sub_e1",
+          "source": "b_in_prompt",
+          "sourceHandle": "prompt",
+          "target": "sub_planner",
+          "targetHandle": "prompt",
+          "type": "glow"
+        },
+        {
+          "id": "sub_e2",
+          "source": "b_in_context",
+          "sourceHandle": "context",
+          "target": "sub_planner",
+          "targetHandle": "context",
+          "type": "glow"
+        },
+        {
+          "id": "sub_e3",
+          "source": "sub_planner",
+          "sourceHandle": "plan",
+          "target": "sub_router",
+          "targetHandle": "plan",
+          "type": "glow"
+        },
+        {
+          "id": "sub_e8",
+          "source": "sub_worker_a1",
+          "sourceHandle": "result",
+          "target": "sub_tool_search",
+          "targetHandle": "query",
+          "type": "glow"
+        },
+        {
+          "id": "sub_e14",
+          "source": "sub_evaluator",
+          "sourceHandle": "feedback",
+          "target": "sub_router",
+          "targetHandle": "feedback",
+          "type": "glow"
+        },
+        {
+          "id": "sub_e15",
+          "source": "sub_evaluator",
+          "sourceHandle": "approved",
+          "target": "sub_schema_guard",
+          "targetHandle": "data",
+          "type": "glow"
+        },
+        {
+          "id": "sub_e16",
+          "source": "sub_schema_guard",
+          "sourceHandle": "valid",
+          "target": "b_out_final",
+          "targetHandle": "final_dataset",
+          "type": "glow"
+        },
+        {
+          "id": "sub_e17",
+          "source": "sub_planner",
+          "sourceHandle": "rules",
+          "target": "sub_evaluator",
+          "targetHandle": "criteria",
+          "type": "glow"
+        },
+        {
+          "id": "e_sub_router_task_research_sub_worker_a1_task_1790422838063",
+          "source": "sub_router",
+          "sourceHandle": "task_research",
+          "target": "sub_worker_a1",
+          "targetHandle": "task",
+          "type": "glow",
+          "data": {
+            "socketType": "Task",
+            "isThick": false
+          }
+        },
+        {
+          "id": "e_sub_tool_search_results_sub_worker_a2_task_1790423728312",
+          "source": "sub_tool_search",
+          "sourceHandle": "results",
+          "target": "sub_worker_a2",
+          "targetHandle": "task",
+          "type": "glow",
+          "data": {
+            "socketType": "Result",
+            "isThick": false
+          }
+        },
+        {
+          "id": "e_sub_worker_a2_result_sub_evaluator_result_1790423817841",
+          "source": "sub_worker_a2",
+          "sourceHandle": "result",
+          "target": "sub_evaluator",
+          "targetHandle": "result",
+          "type": "glow",
+          "data": {
+            "socketType": "Result",
+            "isThick": false
+          }
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "name": "Harness Flow",
+    "createdAt": "2026-09-30T16:08:25.844Z",
+    "updatedAt": "2026-09-30T16:08:25.844Z"
+  }
+}

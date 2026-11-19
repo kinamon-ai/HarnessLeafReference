@@ -1,0 +1,363 @@
+{
+  "version": "1.0.0",
+  "rootLevelId": "root",
+  "currentLevelId": "root",
+  "breadcrumbs": [
+    {
+      "id": "root",
+      "title": "002 Builtin MCP Test (見積計算・基準日時取得フロー)"
+    }
+  ],
+  "levels": {
+    "root": {
+      "nodes": [
+        {
+          "id": "user_directive",
+          "type": "boundaryPort",
+          "position": {
+            "x": -520,
+            "y": 140
+          },
+          "data": {
+            "actorId": "boundary_in",
+            "actorType": "BOUNDARY",
+            "boundaryType": "in",
+            "customName": "見積・納期指示 (IN)",
+            "label": "見積・納期指示 (IN)",
+            "sublabel": "Boundary Input (Context)",
+            "boundSocketId": "prompt",
+            "socketId": "prompt",
+            "boundSocketType": "Context",
+            "protocolType": "Context",
+            "icon": "Plug",
+            "colorHex": "#00E5FF",
+            "inputs": [],
+            "outputs": [
+              {
+                "id": "prompt",
+                "label": "初期プロンプト",
+                "type": "Context"
+              }
+            ],
+            "config": {
+              "testInputEnabled": true,
+              "prompt": "プロジェクト開発費の見積算出および納期スケジュールを作成せよ。\n【要件】\n- 基本開発工数: 160時間 (単価: ¥8,500)\n- 保守運用工数: 40時間 (単価: ¥6,000)\n- 消費税率: 10%\n- 基準着手日: Builtin MCP (datetime) で取得した正確な現在UTC日時を着手日とする\n- 納品予定日: 着手日より45営業日後（65暦日後）\n- 正確な金額計算はBuiltin MCP (calculator) で算出した結果を必ず使用し、計算ミスゼロの正式な見積書フォーマットで出力せよ。",
+              "samplePrompts": [
+                "クラウド移行の5年間TCO・割引・税込見積もり計算（標準）:\nプロジェクト開発費の見積算出および納期スケジュールを作成せよ。\n【要件】\n- 基本開発工数: 160時間 (単価: ¥8,500)\n- 保守運用工数: 40時間 (単価: ¥6,000)\n- 消費税率: 10%\n- 基準着手日: Builtin MCP (datetime) で取得した正確な現在UTC日時を着手日とする\n- 納品予定日: 着手日より45営業日後（65暦日後）\n- 正確な金額計算はBuiltin MCP (calculator) で算出した結果を必ず使用し、計算ミスゼロの正式な見積書フォーマットで出力せよ。",
+                "SaaSライセンス120席×年額契約のボリュームディスカウント＆為替換算試算:\n全社SaaSライセンス導入に伴う見積算出および導入計画を作成せよ。\n【要件】\n- ライセンス数: 120席 (定価: $45/月/席)\n- 年額契約割引率: 15%ディスカウント適用\n- 為替レート: $1 = ¥155.0\n- 初期導入支援費: ¥500,000 (固定工数)\n- 消費税率: 10%\n- 基準着手日: Builtin MCP (datetime) で取得した現在日時\n- Builtin MCP (calculator) でドル建て年額・割引適用後円換算・税込総額を算出し、内訳を明記した正式見積を作成せよ。",
+                "プロジェクト稼働日数・納期逆算と工数単価シミュレーション:\n新規システムリプレイス案件の工数単価シミュレーションおよびマイルストーン日程を作成せよ。\n【要件】\n- アーキテクト工数: 80時間 (単価: ¥12,000)\n- シニアエンジニア工数: 240時間 (単価: ¥9,000)\n- QA・検証工数: 60時間 (単価: ¥6,500)\n- 予備費: 総工数金額の5%\n- 消費税率: 10%\n- 着手予定日: Builtin MCP (datetime) で取得した現在日時\n- 検収・納品期限: 着手日から60営業日後\n- 内訳・小計・予備費・消費税額・税込合計を計算機MCPで正確に算出し、マイルストーン別スケジュールを提示せよ。"
+              ]
+            }
+          }
+        },
+        {
+          "id": "mcp_datetime",
+          "type": "customActor",
+          "position": {
+            "x": -160,
+            "y": 20
+          },
+          "data": {
+            "actorId": "leaf_mcp_connector",
+            "customName": "現在日時取得 MCP (datetime)",
+            "actorType": "LEAF / TOOL",
+            "label": "MCP Datetime Tool",
+            "sublabel": "BUILTIN MCP (datetime)",
+            "icon": "Wrench",
+            "colorHex": "#FFD600",
+            "inputs": [],
+            "outputs": [
+              {
+                "id": "result",
+                "label": "datetime",
+                "type": "Result"
+              }
+            ],
+            "config": {
+              "serverName": "builtin-tools",
+              "toolName": "datetime"
+            }
+          }
+        },
+        {
+          "id": "mcp_calculator",
+          "type": "customActor",
+          "position": {
+            "x": -160,
+            "y": 260
+          },
+          "data": {
+            "actorId": "leaf_mcp_connector",
+            "customName": "高精度計算機 MCP (calculator)",
+            "actorType": "LEAF / TOOL",
+            "label": "MCP Calculator Tool",
+            "sublabel": "BUILTIN MCP (calculator)",
+            "icon": "Wrench",
+            "colorHex": "#FF9100",
+            "inputs": [],
+            "outputs": [
+              {
+                "id": "result",
+                "label": "calc result",
+                "type": "Result"
+              }
+            ],
+            "config": {
+              "serverName": "builtin-tools",
+              "toolName": "calculator",
+              "arguments": {
+                "expression": "(160 * 8500 + 40 * 6000) * 1.1"
+              }
+            }
+          }
+        },
+        {
+          "id": "worker_quotation",
+          "type": "customActor",
+          "position": {
+            "x": 240,
+            "y": 140
+          },
+          "data": {
+            "actorId": "leaf_worker",
+            "customName": "見積書成形ワーカー (Worker素体)",
+            "actorType": "LEAF / CORE ENGINE",
+            "label": "Quotation Worker",
+            "sublabel": "REACT WORKER",
+            "icon": "Bot",
+            "colorHex": "#00E5FF",
+            "inputs": [
+              {
+                "id": "task",
+                "label": "task",
+                "type": "Context"
+              },
+              {
+                "id": "context",
+                "label": "datetime",
+                "type": "Context"
+              },
+              {
+                "id": "tool_result",
+                "label": "calc res",
+                "type": "Result"
+              },
+              {
+                "id": "feedback",
+                "label": "feedback",
+                "type": "Feedback"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "result",
+                "label": "quotation",
+                "type": "Result"
+              }
+            ],
+            "config": {
+              "systemPrompt": "あなたは企業の正式な見積書・プロジェクト提案書を作成する専門AIワーカーです。MCPツールから取得した現在日時（着手日）および高精度計算機から得られた税込合計金額を厳密に使用し、内訳（工数・単価・税抜・消費税・税込）と納期スケジュールが整った見積報告書を出力してください。"
+            }
+          }
+        },
+        {
+          "id": "evaluator_audit",
+          "type": "customActor",
+          "position": {
+            "x": 620,
+            "y": 140
+          },
+          "data": {
+            "actorId": "leaf_evaluator",
+            "customName": "見積整合性審査 (LLM Judge)",
+            "actorType": "LEAF / CORE ENGINE",
+            "label": "Quotation Evaluator",
+            "sublabel": "LLM JUDGE",
+            "icon": "ShieldCheck",
+            "colorHex": "#D500F9",
+            "inputs": [
+              {
+                "id": "result",
+                "label": "result",
+                "type": "Result"
+              },
+              {
+                "id": "criteria",
+                "label": "criteria",
+                "type": "Context"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "approved",
+                "label": "approved",
+                "type": "Result"
+              },
+              {
+                "id": "feedback",
+                "label": "feedback",
+                "type": "Feedback"
+              }
+            ],
+            "config": {
+              "threshold": 0.8,
+              "judgePrompt": "見積書の審査基準:\n1. 税込合計金額が ¥1,760,000 (税抜: ¥1,600,000、消費税: ¥160,000) と一致していること\n2. MCPで取得した着手日と、そこから算出した納期予定日が明記されていること\n3. 基本工数(160h)と保守工数(40h)の内訳が正しく記載されていること"
+            }
+          }
+        },
+        {
+          "id": "storage_kvs",
+          "type": "customActor",
+          "position": {
+            "x": 980,
+            "y": 140
+          },
+          "data": {
+            "actorId": "leaf_kvs_store",
+            "customName": "見積データ永続化 (KVS Memory)",
+            "actorType": "LEAF / STORAGE",
+            "label": "Quotation Storage",
+            "sublabel": "PERSISTENT KVS MEMORY",
+            "icon": "Database",
+            "colorHex": "#00E676",
+            "inputs": [
+              {
+                "id": "write_data",
+                "label": "write",
+                "type": "Result"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "dataset",
+                "label": "dataset",
+                "type": "Result"
+              }
+            ],
+            "config": {
+              "namespace": "quotations",
+              "key": "quote_proj_002"
+            }
+          }
+        },
+        {
+          "id": "mcptest_out",
+          "type": "boundaryPort",
+          "position": {
+            "x": 1300,
+            "y": 140
+          },
+          "data": {
+            "actorId": "boundary_out",
+            "actorType": "BOUNDARY",
+            "boundaryType": "out",
+            "label": "見積確定書 (OUT)",
+            "customName": "見積確定書 (OUT)",
+            "sublabel": "Boundary Output (Result)",
+            "boundSocketId": "result",
+            "socketId": "result",
+            "boundSocketType": "Result",
+            "protocolType": "Result",
+            "icon": "LogOut",
+            "colorHex": "#00FF66",
+            "inputs": [
+              {
+                "id": "result",
+                "label": "最終出力",
+                "type": "Result"
+              }
+            ],
+            "outputs": [],
+            "config": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e_mcp_1",
+          "source": "user_directive",
+          "sourceHandle": "prompt",
+          "target": "worker_quotation",
+          "targetHandle": "task",
+          "type": "glow",
+          "animated": true,
+          "data": {
+            "socketType": "Context"
+          }
+        },
+        {
+          "id": "e_mcp_2",
+          "source": "mcp_datetime",
+          "sourceHandle": "result",
+          "target": "worker_quotation",
+          "targetHandle": "context",
+          "type": "glow",
+          "animated": true,
+          "data": {
+            "socketType": "Result"
+          }
+        },
+        {
+          "id": "e_mcp_3",
+          "source": "mcp_calculator",
+          "sourceHandle": "result",
+          "target": "worker_quotation",
+          "targetHandle": "tool_result",
+          "type": "glow",
+          "animated": true,
+          "data": {
+            "socketType": "Result"
+          }
+        },
+        {
+          "id": "e_mcp_4",
+          "source": "worker_quotation",
+          "sourceHandle": "result",
+          "target": "evaluator_audit",
+          "targetHandle": "result",
+          "type": "glow",
+          "animated": true,
+          "data": {
+            "socketType": "Result"
+          }
+        },
+        {
+          "id": "e_mcp_5",
+          "source": "evaluator_audit",
+          "sourceHandle": "approved",
+          "target": "storage_kvs",
+          "targetHandle": "write_data",
+          "type": "glow",
+          "animated": true,
+          "data": {
+            "socketType": "Result"
+          }
+        },
+        {
+          "id": "e_mcp_6",
+          "source": "evaluator_audit",
+          "sourceHandle": "feedback",
+          "target": "worker_quotation",
+          "targetHandle": "feedback",
+          "type": "glow",
+          "animated": true,
+          "data": {
+            "socketType": "Feedback"
+          }
+        },
+        {
+          "id": "e_mcp_7",
+          "source": "storage_kvs",
+          "sourceHandle": "dataset",
+          "target": "mcptest_out",
+          "targetHandle": "result",
+          "type": "glow",
+          "animated": true,
+          "data": {
+            "socketType": "Result"
+          }
+        }
+      ]
+    }
+  }
+}
